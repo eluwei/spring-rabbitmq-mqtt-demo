@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+  xmlns:int="http://www.springframework.org/schema/integration" xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+  xmlns:util="http://www.springframework.org/schema/util" xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+  xmlns:int-mqtt="http://www.springframework.org/schema/integration/mqtt" xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+    http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.3.xsd
+    http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
+    http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-4.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+    http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-4.0.xsd
+    http://www.springframework.org/schema/integration/mqtt http://www.springframework.org/schema/integration/mqtt/spring-integration-mqtt-4.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+    ">
+
+  <import resource="classpath:com/lxg/push/common.xml" />
+
+  <context:component-scan base-package="com.lxg.push.subscriber.impl" />
+
+  <int-mqtt:message-driven-channel-adapter
+    client-id="suber1"
+    url="#{prop['push.mq.conn.mqtt.url']}"
+    topics="/all, /hyr/common, /individual/suber1"
+    client-factory="mqttClientFactory"
+    channel="mqttMessageChannel"/>
+
+  <int-mqtt:message-driven-channel-adapter
+    client-id="suber2"
+    url="#{prop['push.mq.conn.mqtt.url']}"
+    topics="/all, /tcl/common, /individual/suber2"
+    client-factory="mqttClientFactory"
+    channel="mqttMessageChannel"/>
+
+  <int-mqtt:message-driven-channel-adapter
+    client-id="suber3"
+    url="#{prop['push.mq.conn.mqtt.url']}"
+    topics="/all, /hyr/common, /tcl/common, /individual/suber3"
+    client-factory="mqttClientFactory"
+    channel="mqttMessageChannel"/>
+
+  <int:channel id="mqttMessageChannel"/>
+
+  <int:service-activator id="handleReceivedMessage" input-channel="mqttMessageChannel"
+      ref="messageSubscriber" method="process"/>
+
+</beans>

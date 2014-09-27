@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+  xmlns:int="http://www.springframework.org/schema/integration" xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+  xmlns:util="http://www.springframework.org/schema/util" xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+    http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.3.xsd
+    http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
+    http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-4.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+    http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-2.2.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+    ">
+
+  <util:properties id="prop" location="classpath:configuration.properties" />
+
+  <rabbit:connection-factory id="connectionFactory" publisher-returns="true" channel-cache-size="1"
+      username="#{prop['push.mq.conn.username']}" password="#{prop['push.mq.conn.password']}"
+      addresses="#{prop['push.mq.conn.amqp.host']}"/>
+
+  <bean id="mqttClientFactory"
+    class="org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory">
+    <property name="userName" value="#{prop['push.mq.conn.username']}"/>
+    <property name="password" value="#{prop['push.mq.conn.password']}"/>
+  </bean>
+
+  <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter" />
+
+  <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory" message-converter="jsonMessageConverter"
+      mandatory="true" exchange="#{prop['push.mq.exchange']}" />
+
+  <rabbit:admin id="rabbitAdmin" connection-factory="connectionFactory" auto-startup="true" />
+
+  <rabbit:queue id="pushCacheQueue" name="#{prop['push.mq.queue.cache']}" />
+
+  <rabbit:queue id="pushLogQueue" name="#{prop['push.mq.queue.log']}" />
+
+  <rabbit:topic-exchange name="#{prop['push.mq.exchange.cache']}" >
+    <rabbit:bindings >
+      <rabbit:binding pattern="#" queue="pushCacheQueue" />
+    </rabbit:bindings>
+  </rabbit:topic-exchange>
+
+  <rabbit:topic-exchange id="pushLogExchange" name="#{prop['push.mq.exchange.log']} ">
+    <rabbit:bindings>
+      <rabbit:binding pattern="#" queue="pushLogQueue" />
+    </rabbit:bindings>
+  </rabbit:topic-exchange>
+
+  <rabbit:topic-exchange name="amq.topic">
+    <rabbit:bindings>
+      <rabbit:binding pattern="#" exchange="pushLogExchange" />
+    </rabbit:bindings>
+  </rabbit:topic-exchange>
+
+</beans>

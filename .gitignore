@@ -1,0 +1,11 @@
+.project
+.settings
+.classpath
+target
+META-INF
+.bak
+logs
+app-ehcache
+*.releaseBackup
+release.properties
+.pydevproject
