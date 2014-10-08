@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +36,8 @@ public class MessageFormSplitter {
         List<GenericMessage<String>> messages = new ArrayList<GenericMessage<String>>();
         for (String topic : topics) {
             Map<String, Object> headers = new HashMap<String, Object>();
-            headers.put("mqtt_topic", topic);
-            headers.put("mqtt_qos", 1);
+            headers.put(MqttHeaders.TOPIC, topic);
+            headers.put(MqttHeaders.QOS, 1);
             //headers.put("mqtt_retained", true);
             GenericMessage<String> message = new GenericMessage<String>(messageForm.getMessage(), headers);
             messages.add(message);
