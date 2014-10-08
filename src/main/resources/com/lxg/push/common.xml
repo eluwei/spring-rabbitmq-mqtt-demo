@@ -29,7 +29,7 @@
   <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter" />
 
   <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory" message-converter="jsonMessageConverter"
-      mandatory="true" exchange="#{prop['push.mq.exchange']}" />
+      mandatory="true" exchange="#{prop['push.mq.exchange.cache']}" />
 
   <rabbit:admin id="rabbitAdmin" connection-factory="connectionFactory" auto-startup="true" />
 
@@ -54,5 +54,7 @@
       <rabbit:binding pattern="#" exchange="pushLogExchange" />
     </rabbit:bindings>
   </rabbit:topic-exchange>
+
+  <bean id="mqttClientIdGenerator" class="com.lxg.push.utils.MqttClientIdGenerator" />
 
 </beans>

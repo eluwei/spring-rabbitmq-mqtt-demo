@@ -20,21 +20,21 @@
   <context:component-scan base-package="com.lxg.push.subscriber.impl" />
 
   <int-mqtt:message-driven-channel-adapter
-    client-id="suber1"
+    client-id="#{mqttClientIdGenerator.generate('javaSuber1')}"
     url="#{prop['push.mq.conn.mqtt.url']}"
     topics="/all, /hyr/common, /individual/suber1"
     client-factory="mqttClientFactory"
     channel="mqttMessageChannel"/>
 
   <int-mqtt:message-driven-channel-adapter
-    client-id="suber2"
+    client-id="#{mqttClientIdGenerator.generate('javaSuber2')}"
     url="#{prop['push.mq.conn.mqtt.url']}"
     topics="/all, /tcl/common, /individual/suber2"
     client-factory="mqttClientFactory"
     channel="mqttMessageChannel"/>
 
   <int-mqtt:message-driven-channel-adapter
-    client-id="suber3"
+    client-id="#{mqttClientIdGenerator.generate('javaSuber3')}"
     url="#{prop['push.mq.conn.mqtt.url']}"
     topics="/all, /hyr/common, /tcl/common, /individual/suber3"
     client-factory="mqttClientFactory"

@@ -38,7 +38,7 @@
   <int:logging-channel-adapter id="loggingLoggerChannel" level="DEBUG" logger-name="pushLoggingLogger" log-full-message="true" />
 
   <int-mqtt:outbound-channel-adapter
-    client-id="javaPublisher"
+    client-id="#{mqttClientIdGenerator.generate('javaPuber')}"
     url="#{prop['push.mq.conn.mqtt.url']}"
     client-factory="mqttClientFactory"
     default-qos="1"
